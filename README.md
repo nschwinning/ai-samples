@@ -3,7 +3,9 @@ This repository contains minimal, runnable Python examples showing how to connec
 
 - Anthropic via Azure Foundry using the `anthropic` SDK (`AnthropicFoundry` client)
 - Azure OpenAI via the `openai` SDK (`AzureOpenAI` client)
+- OpenAI (non-Azure) via the `openai` SDK (`OpenAI` client)
 - Two Gradio chat demos built on top of Anthropic via Azure Foundry
+ - OpenAI function-calling (tools) demo using the `openai` SDK
 
 
 ## Prerequisites
@@ -28,6 +30,10 @@ Required for Azure OpenAI (`AzureOpenAI` client):
 - `AZURE_OPENAI_API_KEY` — API key for the Azure OpenAI resource
 - `AZURE_OPENAI_ENDPOINT` — Endpoint URL for the Azure OpenAI resource (e.g., `https://<resource-name>.services.ai.azure.com`)
 
+Required for OpenAI (non-Azure) (`OpenAI` client):
+
+- `OPENAI_API_KEY` — API key for OpenAI's public API (https://platform.openai.com/)
+
 Example `.env`:
 
 ```
@@ -36,6 +42,8 @@ ANTHROPIC_FOUNDRY_RESOURCE=your-foundry-resource-name
 
 AZURE_OPENAI_API_KEY=...your_azure_openai_key...
 AZURE_OPENAI_ENDPOINT=https://your-foundry-resource-name.services.ai.azure.com
+
+OPENAI_API_KEY=...your_openai_key...
 ```
 
 Note: Do not commit real secrets. The `.gitignore` should already exclude `.env`.
@@ -150,6 +158,52 @@ Environment required:
 - Azure OpenAI: `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`
 
 
+### 5) OpenAI (non-Azure) CLI demo
+
+File: `openai-demo.py`
+
+What it does:
+- Loads `.env`
+- Instantiates `OpenAI()` (standard OpenAI client)
+- Calls `chat.completions.create` with `model="gpt-5-mini"`
+
+Run:
+
+```
+uv run python openai-demo.py
+# or
+python openai-demo.py
+```
+
+Environment required: `OPENAI_API_KEY`
+
+
+### 6) OpenAI function calling (tools) CLI demo
+
+File: `tool-call-openai-demo.py`
+
+What it does:
+- Loads `.env`
+- Instantiates `OpenAI()` (standard OpenAI client)
+- Defines a simple tool schema for a function `get_max_mustermanns_nickname`
+- Calls `chat.completions.create` with `model="gpt-5-mini"`, passing the `tools` parameter
+- Prints the full JSON response so you can inspect tool call proposals
+
+Run:
+
+```
+uv run python tool-call-openai-demo.py
+# or
+python tool-call-openai-demo.py
+```
+
+Environment required: `OPENAI_API_KEY`
+
+Notes:
+- This sample demonstrates how to advertise tools to the model. The script prints the raw response; depending on the model output, you may see a tool call proposed in `choices[0].message.tool_calls`.
+- To complete the loop (execute the tool and send the result back), you would parse any proposed tool call(s), run your local function (e.g., `get_max_mustermanns_nickname()`), then append an additional message with `role="tool"` containing the result and call the API again. This is left minimal here to keep the example focused on the request side.
+
+
 ## Notes
 
 - All scripts call `load_dotenv(override=True)` so `.env` values take precedence in your shell.
@@ -161,5 +215,7 @@ Environment required:
 
 - Anthropic Python SDK: https://github.com/anthropics/anthropic-sdk-python
 - Azure OpenAI with OpenAI SDK (Azure OpenAI compatibility): https://learn.microsoft.com/azure/ai-services/openai/how-to/sdk?pivots=programming-language-python
+- OpenAI Python SDK: https://platform.openai.com/docs/libraries/python
+ - OpenAI function calling (tools): https://platform.openai.com/docs/guides/function-calling
 - Gradio: https://www.gradio.app/
 
