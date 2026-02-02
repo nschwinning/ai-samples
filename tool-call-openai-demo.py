@@ -31,3 +31,24 @@ response = client.chat.completions.create(
 )
 
 print(json.dumps(response.model_dump(), indent=2))
+
+finish_reason = response.choices[0].finish_reason
+
+if finish_reason == "tool_calls":
+    message = response.choices[0].message
+    tool_calls = message.tool_calls
+    for tool_call in tool_calls:
+        tool_name = tool_call.function.name
+        arguments = json.loads(tool_call.function.arguments)
+        print(f"Calling tool: {tool_name} with arguments {arguments}", flush=True)
+        tool = globals().get(tool_name)
+        result = tool(**arguments) if tool else {}
+        messages.append(message)
+        messages.append({"role": "tool", "content": json.dumps(result), "tool_call_id": tool_call.id})
+        response = client.chat.completions.create(
+            model="gpt-5-mini",
+            messages=messages,
+            tools=tools,
+            temperature=1
+        )
+        print(response.choices[0].message.content)

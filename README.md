@@ -218,4 +218,4 @@ Notes:
 - OpenAI Python SDK: https://platform.openai.com/docs/libraries/python
  - OpenAI function calling (tools): https://platform.openai.com/docs/guides/function-calling
 - Gradio: https://www.gradio.app/
-
+- OpenAI API documentation: https://platform.openai.com/docs/api-reference/introduction
