@@ -6,6 +6,7 @@ This repository contains minimal, runnable Python examples showing how to connec
 - OpenAI (non-Azure) via the `openai` SDK (`OpenAI` client)
 - Two Gradio chat demos built on top of Anthropic via Azure Foundry
  - OpenAI function-calling (tools) demo using the `openai` SDK
+ - Agent demos using the `openai-agents` library (OpenAI and Azure OpenAI)
 
 
 ## Prerequisites
@@ -202,6 +203,53 @@ Environment required: `OPENAI_API_KEY`
 Notes:
 - This sample demonstrates how to advertise tools to the model. The script prints the raw response; depending on the model output, you may see a tool call proposed in `choices[0].message.tool_calls`.
 - To complete the loop (execute the tool and send the result back), you would parse any proposed tool call(s), run your local function (e.g., `get_max_mustermanns_nickname()`), then append an additional message with `role="tool"` containing the result and call the API again. This is left minimal here to keep the example focused on the request side.
+
+
+### 7) OpenAI Agents (multi-agent) demo
+
+File: `openai-agents.py`
+
+What it does:
+- Uses the `openai-agents` library’s `Agent`, `Runner`, and `trace` utilities
+- Shows a simple agent that tells a joke
+- Shows a multi-agent example running two agents in parallel and combining their outputs
+
+Run:
+
+```
+uv run python openai-agents.py
+# or
+python openai-agents.py
+```
+
+Environment required: `OPENAI_API_KEY`
+
+Notes:
+- The multi-agent example gathers two `final_output` strings and joins them with a separator for display.
+
+
+### 8) Azure OpenAI Agents demo
+
+File: `azure-openai-agents.py`
+
+What it does:
+- Uses `AsyncAzureOpenAI` as the client and integrates it with `openai-agents` via `OpenAIChatCompletionsModel`
+- Demonstrates creating an agent bound to an Azure OpenAI deployment (e.g., `gpt-5.1-chat`)
+- Runs the agent with a simple joke prompt
+
+Run:
+
+```
+uv run python azure-openai-agents.py
+# or
+python azure-openai-agents.py
+```
+
+Environment required: `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`
+
+Notes:
+- API version used in the sample: `2024-02-15-preview`.
+- Ensure the deployment name in the script matches a model you have deployed in your Azure OpenAI resource.
 
 
 ## Notes
